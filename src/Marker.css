@@ -1,0 +1,10 @@
+.Marker {
+  height: 2em;
+  width: 2em;
+  background: red;
+  border-radius: 50%;
+  color: white;
+  line-height: 2em;
+  padding-top: 1px;
+  text-align: center;
+}
