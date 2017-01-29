@@ -18,6 +18,7 @@ function getLocations(){
 function getRoutes(){
   const atApi = new AtApi()
   return atApi.getRoutes().then(routes=>{
+    store.routes = routes
   }).catch(err=>{
     console.error('Error getting routes', err)
   })
