@@ -19,6 +19,7 @@ export default class BusView extends Component {
     , zoom: 11
     , buses: []
     , sidebarOpen: true
+    , sidebarDocked: true
     , routes: []
     , activeRoutes: {}
     , visibleRoutes: {}
@@ -31,6 +32,10 @@ export default class BusView extends Component {
   componentWillMount(){
     this._getData()
     this._interval = setInterval(()=>this._updateData(), 30*1000)
+
+    this._mql = window.matchMedia(`(min-width: 800px)`)
+    this._mql.addListener(this._mediaQueryChanged)
+    this.setState({sidebarDocked: this._mql.matches, sidebarOpen: !!this._mql.matches})
   }
   _parseData(vehicles){
     const buses = vehicles.entity.map(v=>{
@@ -78,6 +83,13 @@ export default class BusView extends Component {
     activeRoutes[routeId] = false
     this.setState({activeRoutes})
   }
+
+  componentWillUnmount() {
+    this._mql.removeListener(this._mediaQueryChanged);
+  }
+  _mediaQueryChanged = ()=>{
+    this.setState({sidebarDocked: this._mql.matches, sidebarOpen: !!this._mql.matches});
+  }
   render(){
     const buses = this.state.buses
     const routes = _.uniqBy(buses.map(b=>this.state.routes[b.routeId]), 'route_short_name')
@@ -103,7 +115,7 @@ export default class BusView extends Component {
       <Sidebar sidebar={<SidebarContent routes={routes} setRouteActive={this._setRouteActive} setRouteInactive={this._setRouteInactive} />}
         open={this.state.sidebarOpen}
         onSetOpen={sidebarOpen=>this.setState({sidebarOpen})}
-        docked={true}
+        docked={this.state.sidebarDocked}
         transitions={false}
       >
         <Header />
