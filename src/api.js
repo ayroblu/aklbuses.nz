@@ -57,8 +57,17 @@ class Api {
 }
 
 export class MainApi extends Api{
-  getCategories(){
-    return fetch(this.apiUrl + this.prefix + '/categories', {
+  constructor(options){
+    super(options)
+    this.prefix = '/api'
+  }
+  getVehicles(){
+    return fetch(this.apiUrl + this.prefix + '/vehicles', {
+      headers: this.getJsonHeaders()
+    })
+  }
+  getRoutes(){
+    return fetch(this.apiUrl + this.prefix + '/routes', {
       headers: this.getJsonHeaders()
     })
   }

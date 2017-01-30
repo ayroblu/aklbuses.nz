@@ -1,3 +1,5 @@
+const fetch = require('node-fetch')
+
 function getVehicleLocations(){
   var url = 'https://api.at.govt.nz/v1/public/realtime/vehiclelocations?api_key=34893bb6-1d38-4403-923b-f3892de693e4'
   getUrl(url, saveVehicleLocations)
@@ -20,12 +22,12 @@ class Api {
     const {token} = options
     this.token = token
   }
-  getJsonHeaders(){
+  _getJsonHeaders(){
     return {
       'Accept': 'application/json'
     }
   }
-  postJsonHeaders(){
+  _postJsonHeaders(){
     return {
       'Accept': 'application/json'
     , 'Content-Type': 'application/json'

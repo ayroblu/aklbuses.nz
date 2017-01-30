@@ -1,10 +1,31 @@
 .Marker {
-  height: 2em;
-  width: 2em;
-  background: red;
-  border-radius: 50%;
+  position:absolute;
+  width: 30px;
+  height: 24px;
+  left: -15px;
+  top: -10px;
+  line-height: 24px;
+  border-radius: 4px;
   color: white;
-  line-height: 2em;
-  padding-top: 1px;
+  font-size: 1em;
   text-align: center;
+  border: 1px solid #5bf;
+  text-shadow: 0 0 5px #000, 0 0 5px #000;
+}
+.Marker:hover {
+  background-color: #5bf;
+}
+.Marker .Popup {
+  position: absolute;
+  top: -150%;
+  left: -175%;
+  text-align: center;
+  pointer-events: none;
+  width: 400%;
+  line-height: 1em;
+  transform: translate(0, -50%);
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.8);
+  box-shadow: 0 0 10px #555;
+  padding: 0 10px;
 }

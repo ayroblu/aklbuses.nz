@@ -1,0 +1,16 @@
+.SidebarContent {
+  background-color: white;
+}
+.SidebarContent .Title {
+  background-color: blue;
+  padding: 10px;
+  color: white;
+  width: 200px;
+}
+.SidebarContent .RouteItem {
+  padding: 5px 10px;
+  border-bottom: 1px solid #ddd;
+}
+.SidebarContent .RouteItem:hover {
+  background-color: #ddd;
+}

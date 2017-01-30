@@ -13,7 +13,7 @@ app.use(express.static(path.resolve(__dirname, '..', 'build')))
 const store = {}
 
 const atpoller = require('./atpoller')
-atpoller(store)
+atpoller(store)()
 const api = require('./api')
 app.use('/api', api(store))
 
