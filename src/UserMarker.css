@@ -1,0 +1,20 @@
+.UserMarker {
+  position:absolute;
+  border-radius: 50%;
+  height: 30px;
+  width: 30px;
+  left: -15px;
+  top: -15px;
+  border: 1px solid #18f;
+}
+.UserMarker .Inner{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #18f;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  box-shadow: 0 0 5px #555;
+}

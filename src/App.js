@@ -2,11 +2,20 @@ import React, { Component } from 'react'
 import GoogleMap from 'google-map-react'
 import Sidebar from 'react-sidebar'
 import _ from 'lodash'
+import injectTapEventPlugin from 'react-tap-event-plugin'
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider'
 
-import { MainApi } from './api'
 import Header from './Header'
 import Marker from './Marker'
+import UserMarker from './UserMarker'
 import SidebarContent from './SidebarContent'
+
+import apiSync from './utils/apiSync'
+import getCurrentLocation from './utils/currentLocation'
+
+// Needed for onTouchTap
+// http://stackoverflow.com/a/34015469/988941
+injectTapEventPlugin()
 
 export default class BusView extends Component {
   constructor(props){
@@ -23,6 +32,8 @@ export default class BusView extends Component {
     , routes: []
     , activeRoutes: {}
     , visibleRoutes: {}
+    , searchValue: ''
+    , bounds: null
     }
     this.defaultState = {
       centre: this.state.centre
@@ -30,69 +41,44 @@ export default class BusView extends Component {
     }
   }
   componentWillMount(){
-    this._getData()
-    this._interval = setInterval(()=>this._updateData(), 30*1000)
-
+    getCurrentLocation().then(({latitude: lat, longitude: lng})=>{
+      this.setState({userLoc: {lat, lng}, centre: {lat, lng}, zoom: 14})
+    }).catch(err=>{
+      console.error('Error getting current location', err)
+    })
+    this._downloadData()
     this._mql = window.matchMedia(`(min-width: 800px)`)
     this._mql.addListener(this._mediaQueryChanged)
     this.setState({sidebarDocked: this._mql.matches, sidebarOpen: !!this._mql.matches})
   }
-  _parseData(vehicles){
-    const buses = vehicles.entity.map(v=>{
-      return {
-        lat: v.vehicle.position.latitude
-      , lng: v.vehicle.position.longitude
-      , text: this.state.routes[v.vehicle.trip.route_id].route_short_name
-      , color: 'rgba(50, 120, 255, 0.2)'
-      , routeId: v.vehicle.trip.route_id
-      }
+  _downloadData(){
+    apiSync.getData().then(({buses, routes})=>{
+      this.setState({buses, routes, prevBuses: buses})
+    }).catch(err=>{
+      console.error('Error getting data:', err)
     })
-    this.setState({
-      buses
-    , prevBuses: buses
-    })
-  }
-  async _getData(){
-    const mainApi = new MainApi()
-    const responses = await Promise.all([mainApi.getVehicles(), mainApi.getRoutes()])
-    if (!responses.every(r=>r.ok)){
-      return console.error('Failure to get from api')
-    }
-    const [ vehicles, routes ] = await Promise.all(responses.map(r=>r.json()))
-    this.setState({routes})
-
-    this._parseData(vehicles)
-  }
-  async _updateData(){
-    const mainApi = new MainApi()
-    const r = await mainApi.getVehicles()
-    if (!r.ok || !this.state.routes) {
-      return console.error('Error updating data')
-    }
-    const vehicles = await r.json()
-
-    this._parseData(vehicles)
-  }
-  _setRouteActive = routeId=>{
-    const activeRoutes = {...this.state.activeRoutes}
-    activeRoutes[routeId] = true
-    this.setState({activeRoutes})
-  }
-  _setRouteInactive = routeId=>{
-    const activeRoutes = {...this.state.activeRoutes}
-    activeRoutes[routeId] = false
-    this.setState({activeRoutes})
-  }
-
-  componentWillUnmount() {
-    this._mql.removeListener(this._mediaQueryChanged);
+    setInterval(()=>{
+      apiSync.updateData(this.state.routes).then(({buses})=>{
+        this.setState({buses, prevBuses: buses})
+      }).catch(err=>{
+        console.error('Error updating data', err)
+      })
+    }, 30*1000)
   }
   _mediaQueryChanged = ()=>{
     this.setState({sidebarDocked: this._mql.matches, sidebarOpen: !!this._mql.matches});
   }
-  render(){
-    const buses = this.state.buses
-    const routes = _.uniqBy(buses.map(b=>this.state.routes[b.routeId]), 'route_short_name')
+  componentWillUnmount() {
+    this._mql.removeListener(this._mediaQueryChanged);
+  }
+  _setRouteActive = (routeId, active)=>{
+    const activeRoutes = {...this.state.activeRoutes}
+    activeRoutes[routeId] = active
+    this.setState({activeRoutes})
+  }
+
+  _getUniqRoutes(buses, routes){
+    return _.uniqBy(buses.map(b=>routes[b.routeId]), 'route_short_name')
       .filter(r=>r)
       .sort((a,b)=>{
         if (a.route_short_name.length < b.route_short_name.length) {
@@ -110,42 +96,65 @@ export default class BusView extends Component {
         // a must be equal to b
         return 0
       })
-    //const bus = { lat: -36, lng: 174, text: 550, color: '#5bf' }
+  }
+  render(){
+    const regex = new RegExp(this.state.searchValue, 'i')
+    const bounds = this.state.bounds
+    const bp = bounds && {
+      lat: (bounds.ne.lat - bounds.se.lat) / 10
+    , lng: (bounds.ne.lng - bounds.nw.lng) / 10
+    }
+    const buses = this.state.buses.filter(b=>(
+      (!this.state.searchValue || regex.test(b.text))
+      && (!bounds || ((b.lat < bounds.ne.lat + bp.lat && b.lat > bounds.se.lat - bp.lat) 
+        && (b.lng > bounds.nw.lng - bp.lng && b.lng < bounds.ne.lng + bp.lng)))
+    ))
+    const routes = this._getUniqRoutes(buses, this.state.routes)
     return (
-      <Sidebar sidebar={<SidebarContent routes={routes} setRouteActive={this._setRouteActive} setRouteInactive={this._setRouteInactive} />}
-        open={this.state.sidebarOpen}
-        onSetOpen={sidebarOpen=>this.setState({sidebarOpen})}
-        docked={this.state.sidebarDocked}
-        transitions={false}
-      >
-        <Header />
-        <div>
-          <GoogleMap
-            defaultCenter={this.defaultState.centre}
-            defaultZoom={this.defaultState.zoom}
-            onChange={e=>this.setState({centre: e.center, zoom: e.zoom})}
-            center={this.state.centre}
-            zoom={this.state.zoom}
-            style={{minHeight: '400px'}}
-            bootstrapURLKeys={{
-              key: 'AIzaSyBkSlPom4tp0ypqQpZela8ct4VIjh2OoN8',
-            }}
-            options={{}}
-          >
-            {buses.map((b, i)=>(
-              <Marker
-                lat={b.lat}
-                lng={b.lng}
-                route={this.state.routes[b.routeId]}
-                bus={b}
-                key={i}
-                active={!!this.state.activeRoutes[b.routeId]}
-                color={b.color}/>
-            ))}
-          </GoogleMap>
-        </div>
+      <MuiThemeProvider>
+        <Sidebar
+          sidebar={
+            <SidebarContent
+              routes={routes}
+              setRouteActive={this._setRouteActive}
+              searchValue={this.state.searchValue}
+              setSearchValue={searchValue=>this.setState({searchValue})}
+            />}
+          open={this.state.sidebarOpen}
+          onSetOpen={sidebarOpen=>this.setState({sidebarOpen})}
+          docked={this.state.sidebarDocked}
+          transitions={false}
+        >
+          <Header />
+          <div>
+            <GoogleMap
+              defaultCenter={this.defaultState.centre}
+              defaultZoom={this.defaultState.zoom}
+              onChange={({center:centre, zoom, bounds})=>this.setState({centre, zoom, bounds})}
+              center={this.state.centre}
+              zoom={this.state.zoom}
+              style={{minHeight: '400px'}}
+              bootstrapURLKeys={{
+                key: 'AIzaSyBkSlPom4tp0ypqQpZela8ct4VIjh2OoN8',
+              }}
+              options={{}}
+            >
+              { this.state.userLoc && <UserMarker {...this.state.userLoc} /> }
+              {buses.map((b, i)=>(
+                <Marker
+                  lat={b.lat}
+                  lng={b.lng}
+                  route={this.state.routes[b.routeId]}
+                  bus={b}
+                  key={i}
+                  active={!!this.state.activeRoutes[b.routeId]}
+                />
+              ))}
+            </GoogleMap>
+          </div>
 
-      </Sidebar>
+        </Sidebar>
+      </MuiThemeProvider>
     )
   }
 }

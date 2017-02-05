@@ -10,7 +10,14 @@
 .SidebarContent .RouteItem {
   padding: 5px 10px;
   border-bottom: 1px solid #ddd;
+  box-sizing: border-box;
+}
+.SidebarContent .RouteItem.On {
+  background-color: green;
 }
 .SidebarContent .RouteItem:hover {
   background-color: #ddd;
+}
+.SidebarContent .SearchIcon {
+  padding: 10px;
 }

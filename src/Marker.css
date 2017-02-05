@@ -11,6 +11,7 @@
   text-align: center;
   border: 1px solid #5bf;
   text-shadow: 0 0 5px #000, 0 0 5px #000;
+  background-color: rgba(50, 120, 255, 0.2);
 }
 .Marker:hover {
   background-color: #5bf;
