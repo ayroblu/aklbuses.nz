@@ -1,5 +1,6 @@
 .SidebarContent {
   background-color: white;
+  min-height: 100%;
 }
 .SidebarContent .Title {
   background-color: blue;

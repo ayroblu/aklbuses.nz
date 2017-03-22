@@ -6,6 +6,17 @@
   z-index: 1;
   text-align: center;
   color: white;
-  background: #38f;
+  background: rgba(51,136,255, 0.5);
   padding: 10px;
+}
+.Header > h1{
+  font-size: 1.5rem;
+  font-weight: 300;
+  margin: 0;
+  padding: 0;
+}
+.Header > .button{
+  position: absolute;
+  left: 0;
+  top: 0;
 }
