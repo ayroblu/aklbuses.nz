@@ -17,7 +17,6 @@
   background-color: #5bf;
 }
 .Marker .Popup {
-  display: none;
   position: absolute;
   top: -150%;
   left: -175%;
@@ -30,9 +29,10 @@
   background-color: rgba(255, 255, 255, 0.8);
   box-shadow: 0 0 10px #555;
   padding: 0 10px;
+  opacity: 0;
 }
 .Marker:hover .Popup,
 .Marker:active .Popup,
 .Marker .Popup.active {
-  display: block;
+  opacity: 1;
 }
