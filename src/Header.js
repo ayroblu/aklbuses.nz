@@ -5,10 +5,10 @@ import './Header.css'
 
 export default class Header extends Component {
   static propTypes = {
-    openMenu: React.PropTypes.func.isRequired
+    setMenu: React.PropTypes.func.isRequired
   }
   _openMenu = ()=>{
-    this.props.openMenu()
+    this.props.setMenu(true)
   }
   render(){
     return (

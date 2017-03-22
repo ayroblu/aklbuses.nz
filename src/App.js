@@ -97,6 +97,12 @@ export default class BusView extends Component {
         return 0
       })
   }
+  _setSidebarOpen = sidebarOpen=>{
+    this.setState({sidebarOpen})
+    if (!sidebarOpen){
+      document.activeElement.blur()
+    }
+  }
   render(){
     const regex = new RegExp(this.state.searchValue, 'i')
     const bounds = this.state.bounds
@@ -121,11 +127,11 @@ export default class BusView extends Component {
               setSearchValue={searchValue=>this.setState({searchValue})}
             />}
           open={this.state.sidebarOpen}
-          onSetOpen={sidebarOpen=>this.setState({sidebarOpen})}
+          onSetOpen={this._setSidebarOpen}
           docked={this.state.sidebarDocked}
           transitions={false}
         >
-          <Header openMenu={()=>this.setState({sidebarOpen: true})}/>
+          <Header setMenu={this._setSidebarOpen}/>
           <div>
             <GoogleMap
               defaultCenter={this.defaultState.centre}
