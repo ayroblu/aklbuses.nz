@@ -32,6 +32,7 @@
   opacity: 0;
 }
 .Marker:hover .Popup,
+.Marker .Popup.focused,
 .Marker:active .Popup,
 .Marker .Popup.active {
   opacity: 1;
