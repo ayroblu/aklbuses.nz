@@ -10,12 +10,10 @@ export default class Marker extends Component{
   render(){
     return (
       <div className='Marker' style={Object.assign({}, (this.props.$hover || this.props.active) ? {background: '#5bf', zIndex: 1} : {})}>
-        {(this.props.$hover || this.props.active)
-        ? <div className='Popup'>
-            <p>{this.props.route.agency_id + ' - ' + this.props.route.route_short_name}</p>
-            <p>{this.props.route.route_long_name}</p>
-          </div>
-        : null}
+        <div className={'Popup' + (this.props.active ? ' active' : '')}>
+          <p>{this.props.route.agency_id + ' - ' + this.props.route.route_short_name}</p>
+          <p>{this.props.route.route_long_name}</p>
+        </div>
         {this.props.route.route_short_name}
       </div>
     )
