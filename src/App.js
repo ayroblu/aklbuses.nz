@@ -131,7 +131,7 @@ export default class BusView extends Component {
           docked={this.state.sidebarDocked}
           transitions={false}
         >
-          <Header setMenu={this._setSidebarOpen}/>
+          <Header setMenu={this._setSidebarOpen} menuButtonHidden={this.state.sidebarDocked}/>
           <div>
             <GoogleMap
               defaultCenter={this.defaultState.centre}
