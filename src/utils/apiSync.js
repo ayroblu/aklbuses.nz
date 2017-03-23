@@ -6,7 +6,7 @@ export default {
       return {
         lat: v.vehicle.position.latitude
       , lng: v.vehicle.position.longitude
-      , text: routes[v.vehicle.trip.route_id] ? routes[v.vehicle.trip.route_id].route_short_name || 'No route information'
+      , text: routes[v.vehicle.trip.route_id] ? routes[v.vehicle.trip.route_id].route_short_name : 'No route information'
       , routeId: v.vehicle.trip.route_id
       }
     })
