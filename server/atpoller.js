@@ -31,7 +31,6 @@ function getLocations(){
     , text: store.routes[e.vehicle.trip.route_id] ? store.routes[e.vehicle.trip.route_id].route_short_name : 'No route information'
     , route: _.pick(store.routes[e.vehicle.trip.route_id], ['route_short_name', 'route_long_name', 'agency_id', 'route_type'])
     }))
-    console.log('location', loc)
     console.log('New locations:', loc.length)
     store.locations = loc
   }).catch(err=>{
