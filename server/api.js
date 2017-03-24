@@ -6,10 +6,13 @@ router.use(function(req, res, next) {
   next()
 })
 
-let store = {}
+let store = {
+  locations: {}
+, routes: {}
+}
 
 router.get('/vehicles', function(req, res, next) {
-  res.json(store.locations || {})
+  res.json(store.locations)
 })
 router.get('/routes', function(req, res, next) {
   res.json(store.routes)

@@ -29,7 +29,6 @@ export default class BusView extends Component {
     , buses: []
     , sidebarOpen: true
     , sidebarDocked: true
-    , routes: []
     , activeRoutes: {}
     , visibleRoutes: {}
     , searchValue: ''
@@ -52,13 +51,13 @@ export default class BusView extends Component {
     this.setState({sidebarDocked: this._mql.matches, sidebarOpen: !!this._mql.matches})
   }
   _downloadData(){
-    apiSync.getData().then(({buses, routes})=>{
-      this.setState({buses, routes, prevBuses: buses})
+    apiSync.getData().then(({buses})=>{
+      this.setState({buses, prevBuses: buses})
     }).catch(err=>{
       console.error('Error getting data:', err)
     })
     setInterval(()=>{
-      apiSync.updateData(this.state.routes).then(({buses})=>{
+      apiSync.updateData().then(({buses})=>{
         this.setState({buses, prevBuses: buses})
       }).catch(err=>{
         console.error('Error updating data', err)
@@ -77,8 +76,8 @@ export default class BusView extends Component {
     this.setState({activeRoutes})
   }
 
-  _getUniqRoutes(buses, routes){
-    return _.uniqBy(buses.map(b=>routes[b.routeId]), 'route_short_name')
+  _getUniqRoutes(buses){
+    return _.uniqBy(buses.map(b=>b.route), 'route_short_name')
       .filter(r=>r)
       .sort((a,b)=>{
         if (a.route_short_name.length < b.route_short_name.length) {
@@ -115,7 +114,7 @@ export default class BusView extends Component {
       && (!bounds || ((b.lat < bounds.ne.lat + bp.lat && b.lat > bounds.se.lat - bp.lat) 
         && (b.lng > bounds.nw.lng - bp.lng && b.lng < bounds.ne.lng + bp.lng)))
     ))
-    const routes = this._getUniqRoutes(buses, this.state.routes)
+    const routes = this._getUniqRoutes(buses)
     return (
       <MuiThemeProvider>
         <Sidebar
@@ -150,7 +149,7 @@ export default class BusView extends Component {
                 <Marker
                   lat={b.lat}
                   lng={b.lng}
-                  route={this.state.routes[b.routeId]}
+                  route={b.route}
                   bus={b}
                   key={i}
                   active={!!this.state.activeRoutes[b.routeId]}

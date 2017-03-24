@@ -1,11 +1,14 @@
 const { AtApi } = require('../utils/api')
+const _ = require('lodash')
 
 let store = {}
 
 function run(){
   setInterval(getLocations, 30000) // every 30 seconds
   //setInterval(getRoutes, 86400000) // daily: 1000 * 60 * 60 * 24
-  getRoutes()
+  getRoutes().catch(err=>{
+    console.error('Error getting routes', err)
+  })
   getLocations()
   console.log('Run at poller')
 }
@@ -15,11 +18,24 @@ function getLocations(){
     store.locations = locations.response
     if (!store.routes || locations.response.entity.find(e=>!store.routes[e.vehicle.trip.route_id])){
       console.log('no routes')
-      getRoutes()
+      return getRoutes().then(()=>{
+        return locations
+      })
     }
-    console.log('New locations:', locations.response.entity.length)
+    return locations
+  }).then(locations=>{
+    const loc = locations.response.entity.map(e=>({
+      routeId: e.vehicle.trip.route_id
+    , lat: e.vehicle.position.latitude
+    , lng: e.vehicle.position.longitude
+    , text: store.routes[e.vehicle.trip.route_id] ? store.routes[e.vehicle.trip.route_id].route_short_name : 'No route information'
+    , route: _.pick(store.routes[e.vehicle.trip.route_id], ['route_short_name', 'route_long_name', 'agency_id', 'route_type'])
+    }))
+    console.log('location', loc)
+    console.log('New locations:', loc.length)
+    store.locations = loc
   }).catch(err=>{
-    console.error('Error getting routes', err)
+    console.error('Error getting locations', err)
   })
 }
 function getRoutes(){
@@ -34,8 +50,6 @@ function getRoutes(){
     }
     Object.assign(store.routes, newRoutes)
     console.log('New routes:', routes.response.length)
-  }).catch(err=>{
-    console.error('Error getting routes', err)
   })
 }
 
