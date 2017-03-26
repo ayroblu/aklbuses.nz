@@ -6,9 +6,6 @@ let store = {}
 function run(){
   setInterval(getLocations, 30000) // every 30 seconds
   //setInterval(getRoutes, 86400000) // daily: 1000 * 60 * 60 * 24
-  getRoutes().catch(err=>{
-    console.error('Error getting routes', err)
-  })
   getLocations()
   console.log('Run at poller')
 }
