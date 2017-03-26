@@ -15,7 +15,7 @@ yarn
 # Build frontend
 yarn run build
 # Server
-PORT=5050 yarn run start:server
+PORT=5050 NODE_ENV=production yarn run start:server
 ```
 
 Development
