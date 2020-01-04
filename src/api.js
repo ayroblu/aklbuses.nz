@@ -1,74 +1,79 @@
-import { apiUrl } from './config'
-import _ from 'lodash'
+import { apiUrl } from "./config";
 
 class Api {
-  constructor(options){
-    this.apiUrl = apiUrl
-    this.prefix = ''
-    if (!options){
-      return
+  constructor(options) {
+    this.apiUrl = apiUrl;
+    this.prefix = "";
+    if (!options) {
+      return;
     }
-    const {token} = options
-    this.token = token
+    const { token } = options;
+    this.token = token;
   }
-  getJsonHeaders(){
+  getJsonHeaders() {
     return {
-      'Accept': 'application/json'
-    }
+      Accept: "application/json",
+    };
   }
-  postJsonHeaders(){
+  postJsonHeaders() {
     return {
-      'Accept': 'application/json'
-    , 'Content-Type': 'application/json'
-    }
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    };
   }
-  setToken(token){
-    this.token = token
+  setToken(token) {
+    this.token = token;
   }
-  handleUnauthed(res){
+  handleUnauthed(res) {
     if (res.status === 401) {
       //this.navigateTo('login', {reset: true})
       //db.cleanDb()
-      return new Promise(()=>{})
+      return new Promise(() => {});
     } else {
-      return res
+      return res;
     }
   }
-  _buildQueryString(data){
-    return '?' + Object.keys(data).map(d=>d+'='+encodeURIComponent(data[d]))
+  _buildQueryString(data) {
+    return (
+      "?" + Object.keys(data).map(d => d + "=" + encodeURIComponent(data[d]))
+    );
   }
-  _handleStatus(response){
-    const status = response.status
-    const ok = response.ok
+  _handleStatus(response) {
+    const status = response.status;
+    const ok = response.ok;
     if (status >= 500) {
-      console.error('Sorry, server had a problem, status code:', status)
-      return new Promise(()=>{})
+      console.error("Sorry, server had a problem, status code:", status);
+      return new Promise(() => {});
     }
-    const promise = Promise.resolve(response.json())
-    if (!ok){
-      return promise.then(r=>{
-        const message = (r && r.message) || 'No answer from server'
-        console.error('Sorry, you made a bad request, status code:', status, message)
-      })
+    const promise = Promise.resolve(response.json());
+    if (!ok) {
+      return promise.then(r => {
+        const message = (r && r.message) || "No answer from server";
+        console.error(
+          "Sorry, you made a bad request, status code:",
+          status,
+          message
+        );
+      });
     } else {
-      return promise
+      return promise;
     }
   }
 }
 
-export class MainApi extends Api{
-  constructor(options){
-    super(options)
-    this.prefix = '/api'
+export class MainApi extends Api {
+  constructor(options) {
+    super(options);
+    this.prefix = "/api";
   }
-  getVehicles(){
-    return fetch(this.apiUrl + this.prefix + '/vehicles', {
-      headers: this.getJsonHeaders()
-    })
+  getVehicles() {
+    return fetch(this.apiUrl + this.prefix + "/vehicles", {
+      headers: this.getJsonHeaders(),
+    });
   }
-  getRoutes(){
-    return fetch(this.apiUrl + this.prefix + '/routes', {
-      headers: this.getJsonHeaders()
-    })
+  getRoutes() {
+    return fetch(this.apiUrl + this.prefix + "/routes", {
+      headers: this.getJsonHeaders(),
+    });
   }
 }
