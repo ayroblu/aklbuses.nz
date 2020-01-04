@@ -1,7 +1,7 @@
-import { MainApi } from '../api'
+import { MainApi } from "../api";
 
 export default {
-  _parseData(vehicles){
+  _parseData(vehicles) {
     //const buses = vehicles.entity.map(v=>{
     //  return {
     //    lat: v.vehicle.position.latitude
@@ -10,27 +10,26 @@ export default {
     //  , routeId: v.vehicle.trip.route_id
     //  }
     //})
-    return vehicles
+    return vehicles;
   },
-  async getData(){
-    const mainApi = new MainApi()
-    const response = await mainApi.getVehicles()
-    if (!response.ok){
-      return console.error('Failure to get from api')
+  async getData() {
+    const mainApi = new MainApi();
+    const response = await mainApi.getVehicles();
+    if (!response.ok) {
+      return console.error("Failure to get from api");
     }
-    const vehicles = await response.json()
+    const vehicles = await response.json();
 
-    return {buses: this._parseData(vehicles)}
+    return { buses: this._parseData(vehicles) };
   },
-  async updateData(){
-    const mainApi = new MainApi()
-    const r = await mainApi.getVehicles()
+  async updateData() {
+    const mainApi = new MainApi();
+    const r = await mainApi.getVehicles();
     if (!r.ok) {
-      return console.error('Error updating data')
+      return console.error("Error updating data");
     }
-    const vehicles = await r.json()
+    const vehicles = await r.json();
 
-    return {buses: this._parseData(vehicles)}
+    return { buses: this._parseData(vehicles) };
   },
-}
-
+};

@@ -1,8 +1,8 @@
-export default function getCurrentLocation(){
-  return new Promise((y, n)=>{
+export default function getCurrentLocation() {
+  return new Promise((y, n) => {
     if (!("geolocation" in window.navigator)) {
-      return y(null)
+      return y(null);
     }
-    window.navigator.geolocation.getCurrentPosition(({coords})=>y(coords))
-  })
+    window.navigator.geolocation.getCurrentPosition(({ coords }) => y(coords));
+  });
 }
