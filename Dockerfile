@@ -4,5 +4,9 @@ COPY package.json yarn.lock ./
 RUN yarn --frozen-lockfile
 COPY . ./
 RUN yarn build
+
 EXPOSE 80
-CMD ["PORT=80", "NODE_ENV=production", "yarn", "start:server"]
+ENV PORT 80
+ENV NODE_ENV production
+
+CMD ["yarn", "start:server"]
