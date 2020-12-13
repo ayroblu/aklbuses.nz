@@ -22,7 +22,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "start:server": "PORT=3001 node server",
+    "start:server": "node server",
     "format": "prettier --write 'src/**/*.js'",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
