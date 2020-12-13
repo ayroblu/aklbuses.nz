@@ -8,6 +8,10 @@ This app shows the live locations of buses in Auckland. This currently has a max
 This app uses the create react app + node express server structure.
 It doesn't make sense to use server side rendering, which I've outlined in another repo
 
+TODO
+----
+Need to update
+
 Install
 -------
 ```
