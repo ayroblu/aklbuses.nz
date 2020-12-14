@@ -1,23 +1,17 @@
 const fetch = require("node-fetch");
 
-function getVehicleLocations() {
-  var url =
-    "https://api.at.govt.nz/v1/public/realtime/vehiclelocations?api_key=34893bb6-1d38-4403-923b-f3892de693e4";
-  getUrl(url, saveVehicleLocations);
-}
-function getRoutes() {
-  var url =
-    "https://api.at.govt.nz/v1/gtfs/routes?api_key=34893bb6-1d38-4403-923b-f3892de693e4";
-  getUrl(url, updateRoutes);
-}
 const apiUrl = "https://api.at.govt.nz";
 const api_key = "34893bb6-1d38-4403-923b-f3892de693e4";
+const apiKey = "5d264a1a67674cc9b17c450c96316da4";
 
 class Api {
   constructor(options) {
     this.apiUrl = apiUrl;
     this.api_key = api_key;
     this.prefix = "";
+    this.headers = {
+      "Ocp-Apim-Subscription-Key": apiKey,
+    };
     if (!options) {
       return;
     }
@@ -45,7 +39,10 @@ class Api {
   }
   _fetchData(url) {
     return fetch(url, {
-      headers: this._getJsonHeaders(),
+      headers: {
+        ...this._getJsonHeaders(),
+        ...this.headers,
+      },
     }).then((resp) => {
       if (resp.ok) {
         return resp.json();
@@ -60,22 +57,16 @@ class Api {
 class AtApi extends Api {
   constructor(options) {
     super(options);
-    this.prefix = "/v1";
+    this.prefix = "/v2";
   }
   getVehicleLocations() {
-    const url =
-      this.apiUrl +
-      this.prefix +
-      "/public/realtime/vehicleLocations" +
-      this._buildQueryString({ api_key });
+    const url = this.apiUrl + this.prefix + "/public/realtime/vehiclelocations";
+    console.log(url);
     return this._fetchData(url);
   }
   getRoutes() {
-    const url =
-      this.apiUrl +
-      this.prefix +
-      "/gtfs/routes" +
-      this._buildQueryString({ api_key });
+    const url = this.apiUrl + this.prefix + "/gtfs/routes";
+    console.log(url);
     return this._fetchData(url);
   }
 }

@@ -18,7 +18,7 @@ function getLocations() {
       if (
         !store.routes ||
         locations.response.entity.find(
-          (e) => !store.routes[e.vehicle.trip.route_id]
+          (e) => e.vehicle.trip && !store.routes[e.vehicle.trip.route_id]
         )
       ) {
         console.log("no routes");
@@ -29,20 +29,22 @@ function getLocations() {
       return locations;
     })
     .then((locations) => {
-      const loc = locations.response.entity.map((e) => ({
-        routeId: e.vehicle.trip.route_id,
-        lat: e.vehicle.position.latitude,
-        lng: e.vehicle.position.longitude,
-        text: store.routes[e.vehicle.trip.route_id]
-          ? store.routes[e.vehicle.trip.route_id].route_short_name
-          : "No route information",
-        route: _.pick(store.routes[e.vehicle.trip.route_id], [
-          "route_short_name",
-          "route_long_name",
-          "agency_id",
-          "route_type",
-        ]),
-      }));
+      const loc = locations.response.entity
+        .filter((e) => e.vehicle.trip)
+        .map((e) => ({
+          routeId: e.vehicle.trip.route_id,
+          lat: e.vehicle.position.latitude,
+          lng: e.vehicle.position.longitude,
+          text: store.routes[e.vehicle.trip.route_id]
+            ? store.routes[e.vehicle.trip.route_id].route_short_name
+            : "No route information",
+          route: _.pick(store.routes[e.vehicle.trip.route_id], [
+            "route_short_name",
+            "route_long_name",
+            "agency_id",
+            "route_type",
+          ]),
+        }));
       console.log("New locations:", loc.length);
       store.locations = loc;
     })
