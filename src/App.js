@@ -42,7 +42,7 @@ export default class BusView extends Component {
           zoom: 14,
         });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Error getting current location", err);
       });
     this._downloadData();
@@ -59,7 +59,7 @@ export default class BusView extends Component {
       .then(({ buses }) => {
         this.setState({ buses, prevBuses: buses });
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Error getting data:", err);
       });
     setInterval(() => {
@@ -68,7 +68,7 @@ export default class BusView extends Component {
         .then(({ buses }) => {
           this.setState({ buses, prevBuses: buses });
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Error updating data", err);
         });
     }, 30 * 1000);
@@ -90,10 +90,10 @@ export default class BusView extends Component {
 
   _getUniqRoutes(buses) {
     return _.uniqBy(
-      buses.map(b => b.route),
+      buses.map((b) => b.route),
       "route_short_name"
     )
-      .filter(r => r)
+      .filter((r) => r)
       .sort((a, b) => {
         if (a.route_short_name.length < b.route_short_name.length) {
           return -1;
@@ -111,7 +111,7 @@ export default class BusView extends Component {
         return 0;
       });
   }
-  _setSidebarOpen = sidebarOpen => {
+  _setSidebarOpen = (sidebarOpen) => {
     this.setState({ sidebarOpen });
     if (!sidebarOpen) {
       document.activeElement.blur();
@@ -125,7 +125,7 @@ export default class BusView extends Component {
       lng: (bounds.ne.lng - bounds.nw.lng) / 10,
     };
     const buses = this.state.buses.filter(
-      b =>
+      (b) =>
         (!this.state.searchValue || regex.test(b.text)) &&
         (!bounds ||
           (b.lat < bounds.ne.lat + bp.lat &&
@@ -142,7 +142,7 @@ export default class BusView extends Component {
               routes={routes}
               setRouteActive={this._setRouteActive}
               searchValue={this.state.searchValue}
-              setSearchValue={searchValue => this.setState({ searchValue })}
+              setSearchValue={(searchValue) => this.setState({ searchValue })}
             />
           }
           open={this.state.sidebarOpen}

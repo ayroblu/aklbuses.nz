@@ -5,7 +5,7 @@ import "./Marker.css";
 
 function cn() {
   return Array.from(arguments)
-    .filter(a => a)
+    .filter((a) => a)
     .join(" ");
 }
 export default class Marker extends Component {

@@ -1,5 +1,5 @@
 .UserMarker {
-  position:absolute;
+  position: absolute;
   border-radius: 50%;
   height: 30px;
   width: 30px;
@@ -7,7 +7,7 @@
   top: -15px;
   border: 1px solid #18f;
 }
-.UserMarker .Inner{
+.UserMarker .Inner {
   position: absolute;
   top: 50%;
   left: 50%;

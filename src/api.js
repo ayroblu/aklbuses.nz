@@ -35,7 +35,7 @@ class Api {
   }
   _buildQueryString(data) {
     return (
-      "?" + Object.keys(data).map(d => d + "=" + encodeURIComponent(data[d]))
+      "?" + Object.keys(data).map((d) => d + "=" + encodeURIComponent(data[d]))
     );
   }
   _handleStatus(response) {
@@ -47,7 +47,7 @@ class Api {
     }
     const promise = Promise.resolve(response.json());
     if (!ok) {
-      return promise.then(r => {
+      return promise.then((r) => {
         const message = (r && r.message) || "No answer from server";
         console.error(
           "Sorry, you made a bad request, status code:",
